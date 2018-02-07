@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
         // counter didn't reset back to zero; the application is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: new MyHomePage(title: 'Flutter Demo Home Page'),
+      home: new MyHomePage(title: 'Familog'),
     );
   }
 }
@@ -64,7 +64,63 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
+    final List<Widget> lists = <Widget>[
+      new ListTile(
+          title: new Text("日記を書く"),
+          onTap: () {
+            Navigator.of(context).pop(); // Hide drawer
+          }),
+      new ListTile(
+          title: new Text("ユーザー設定"),
+          onTap: () {
+            Navigator.of(context).pop(); // Hide drawer
+          }),
+      new ListTile(
+          title: new Text("利用規約"),
+          onTap: () {
+            Navigator.of(context).pop(); // Hide drawer
+          }),
+    ];
     return new Scaffold(
+      drawer: new Drawer(
+        child: new Column(
+          children: <Widget>[
+            new UserAccountsDrawerHeader(
+              accountName: new Text("suusan2go"),
+              accountEmail: new Text("ksuzuki180@gmail.com"),
+              currentAccountPicture: new CircleAvatar(
+                backgroundColor: Colors.white,
+                backgroundImage: new NetworkImage("https://avatars1.githubusercontent.com/u/8841470?s=460&v=4")
+              ),
+//              decoration: new BoxDecoration(
+//                image: new DecorationImage(
+//                  image: new AssetImage(
+//                    imgHeader,
+//                  ),
+//                  fit: BoxFit.cover,
+//                ),
+//              ),
+              margin: EdgeInsets.zero,
+            ),
+            new MediaQuery.removePadding(
+              context: context,
+              removeTop: true,
+              child: new Expanded(
+                child: new ListView(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  children: <Widget>[
+                    new Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: lists,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
       appBar: new AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
@@ -89,6 +145,14 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            new Container(
+              padding: const EdgeInsets.all(20.0),
+              child: new RaisedButton(onPressed: _incrementCounter, child: new Text("家族を招待する")),
+            ),
+            new Container(
+              padding: const EdgeInsets.all(20.0),
+              child: new RaisedButton(onPressed: _incrementCounter, child: new Text("日記を始める")),
+            ),
             new Text(
               'You have pushed the button this many times:',
             ),
@@ -102,7 +166,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: new FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
-        child: new Icon(Icons.add),
+        child: new Icon(Icons.edit),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
