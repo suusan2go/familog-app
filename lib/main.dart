@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:familog/presentation/my_drawer.dart';
 
 void main() => runApp(new MyApp());
 
@@ -64,63 +65,8 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    final List<Widget> lists = <Widget>[
-      new ListTile(
-          title: new Text("日記を書く"),
-          onTap: () {
-            Navigator.of(context).pop(); // Hide drawer
-          }),
-      new ListTile(
-          title: new Text("ユーザー設定"),
-          onTap: () {
-            Navigator.of(context).pop(); // Hide drawer
-          }),
-      new ListTile(
-          title: new Text("利用規約"),
-          onTap: () {
-            Navigator.of(context).pop(); // Hide drawer
-          }),
-    ];
     return new Scaffold(
-      drawer: new Drawer(
-        child: new Column(
-          children: <Widget>[
-            new UserAccountsDrawerHeader(
-              accountName: new Text("suusan2go"),
-              accountEmail: new Text("ksuzuki180@gmail.com"),
-              currentAccountPicture: new CircleAvatar(
-                backgroundColor: Colors.white,
-                backgroundImage: new NetworkImage("https://avatars1.githubusercontent.com/u/8841470?s=460&v=4")
-              ),
-//              decoration: new BoxDecoration(
-//                image: new DecorationImage(
-//                  image: new AssetImage(
-//                    imgHeader,
-//                  ),
-//                  fit: BoxFit.cover,
-//                ),
-//              ),
-              margin: EdgeInsets.zero,
-            ),
-            new MediaQuery.removePadding(
-              context: context,
-              removeTop: true,
-              child: new Expanded(
-                child: new ListView(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  children: <Widget>[
-                    new Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: lists,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+      drawer: new MyDrawer(),
       appBar: new AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
@@ -168,6 +114,39 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Increment',
         child: new Icon(Icons.edit),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+class PageContainer {
+  PageContainer({
+    this.title,
+    this.icon,
+    this.hasTab,
+    this.body,
+    TickerProvider tickerProvider,
+  })
+      : controller = new AnimationController(
+    duration: kThemeAnimationDuration,
+    vsync: tickerProvider,
+  ) {
+    _animation = new CurvedAnimation(
+      parent: controller,
+      curve: const Interval(0.5, 1.0, curve: Curves.fastOutSlowIn),
+    );
+  }
+
+  final String title;
+  final Widget icon;
+  final bool hasTab;
+  final ValueGetter<Widget> body;
+  final AnimationController controller;
+  CurvedAnimation _animation;
+
+  FadeTransition transition() {
+    return new FadeTransition(
+      opacity: _animation,
+      child: body(),
     );
   }
 }
