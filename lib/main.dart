@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:familog/presentation/my_drawer.dart';
+import 'package:familog/presentation/profile.dart';
+import 'package:familog/presentation/home.dart';
 
 void main() => runApp(new MyApp());
 
@@ -8,7 +10,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: 'Flutter Demo',
+      title: 'FamilogApp',
       theme: new ThemeData(
         // This is the theme of your application.
         //
@@ -18,9 +20,12 @@ class MyApp extends StatelessWidget {
         // "hot reload" (press "r" in the console where you ran "flutter run",
         // or press Run > Flutter Hot Reload in IntelliJ). Notice that the
         // counter didn't reset back to zero; the application is not restarted.
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.green,
       ),
       home: new MyHomePage(title: 'Familog'),
+      routes: <String, WidgetBuilder> {
+        '/profile': (BuildContext context) => new Profile(),
+      },
     );
   }
 }
@@ -72,81 +77,12 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: new Text(widget.title),
       ),
-      body: new Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: new Column(
-          // Column is also layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug paint" (press "p" in the console where you ran
-          // "flutter run", or select "Toggle Debug Paint" from the Flutter tool
-          // window in IntelliJ) to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            new Container(
-              padding: const EdgeInsets.all(20.0),
-              child: new RaisedButton(onPressed: _incrementCounter, child: new Text("家族を招待する")),
-            ),
-            new Container(
-              padding: const EdgeInsets.all(20.0),
-              child: new RaisedButton(onPressed: _incrementCounter, child: new Text("日記を始める")),
-            ),
-            new Text(
-              'You have pushed the button this many times:',
-            ),
-            new Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
-            ),
-          ],
-        ),
-      ),
+      body: new Home(_counter, _incrementCounter),
       floatingActionButton: new FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
         child: new Icon(Icons.edit),
       ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
-  }
-}
-
-class PageContainer {
-  PageContainer({
-    this.title,
-    this.icon,
-    this.hasTab,
-    this.body,
-    TickerProvider tickerProvider,
-  })
-      : controller = new AnimationController(
-    duration: kThemeAnimationDuration,
-    vsync: tickerProvider,
-  ) {
-    _animation = new CurvedAnimation(
-      parent: controller,
-      curve: const Interval(0.5, 1.0, curve: Curves.fastOutSlowIn),
-    );
-  }
-
-  final String title;
-  final Widget icon;
-  final bool hasTab;
-  final ValueGetter<Widget> body;
-  final AnimationController controller;
-  CurvedAnimation _animation;
-
-  FadeTransition transition() {
-    return new FadeTransition(
-      opacity: _animation,
-      child: body(),
     );
   }
 }

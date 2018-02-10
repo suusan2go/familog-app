@@ -7,14 +7,10 @@ class MyDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Widget> lists = <Widget>[
       new ListTile(
-          title: new Text("日記を書く"),
-          onTap: () {
-            Navigator.of(context).pop(); // Hide drawer
-          }),
-      new ListTile(
           title: new Text("ユーザー設定"),
           onTap: () {
             Navigator.of(context).pop(); // Hide drawer
+            Navigator.of(context).pushNamed('/profile');
           }),
       new ListTile(
           title: new Text("利用規約"),
