@@ -58,7 +58,19 @@ class Home extends StatelessWidget {
     if(false) return _buildNotLoggedIn(context);
     return new ListView(
       children: <Widget>[
-        new Text("hoge")
+        new Card(
+          child: new Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              const ListTile(
+                  leading: const Icon(Icons.album),
+                  title: const Text('2018/2/11 すーさんの日記☺'),
+                  subtitle: const Text('今日はしほはじーじ・ばーばの家にいって楽しそうだった。このテキストはダミーですこのテキストはダミーですこのテキストはダミーです'),
+                  isThreeLine: true,
+              ),
+            ],
+          ),
+        )
       ],
     );
   }
