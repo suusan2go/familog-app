@@ -56,17 +56,62 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if(false) return _buildNotLoggedIn(context);
+    String sampleUri = "http://benesse.jp/kosodate/201709/img/KJ_20170908_02.jpg";// "https://www.photolibrary.jp/mhd6/img222/450-20110922175418165134.jpg";
     return new ListView(
       children: <Widget>[
+        new Card(
+          child: new Container(
+            child: new Row(
+              children: <Widget>[
+                new Image.network(sampleUri, height: 100.0, width: 100.0, fit: BoxFit.cover),
+                new Expanded(
+                    child:  new Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        new Container(
+                          child: new Text('2018/2/11 すーさんの日記☺', softWrap: true, style: new TextStyle(
+                            fontWeight: FontWeight.w300,
+                            fontSize: 16.0
+                          ),),
+                          padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                        ),
+                        new Container(
+                          child: new Text('今日はしほはじーじ・ばーばの家にいって楽しそうだった。このテキストはダミーですこのテキストはダミーですこのテキストはダミーです今日はしほはじーじ・ばーばの家にいって楽しそうだった。このテキストはダミーですこのテキストはダミーですこのテキストはダミーです今日はしほはじーじ・ばーばの家にいって楽しそうだった。このテキストはダミーですこのテキストはダミーですこのテキストはダミーです',
+                            softWrap: true,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 3,
+                            style: new TextStyle(
+                              fontSize: 14.0,
+                              color: Colors.black87
+                            ),
+                          ),
+                          padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                        )
+                      ],
+                    )
+                )
+              ],
+            ),
+//            child: <Widget>[
+//              new ListTile(
+//                leading: new CircleAvatar(
+//                  backgroundImage: new NetworkImage(sampleUri),
+//                ),
+//                title: const Text('2018/2/11 すーさんの日記☺'),
+//                subtitle: const Text('今日はしほはじーじ・ばーばの家にいって楽しそうだった。このテキストはダミーですこのテキストはダミーですこのテキストはダミーです'),
+//                isThreeLine: true,
+//              ),
+//            ],
+          ),
+        ),
         new Card(
           child: new Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               const ListTile(
-                  leading: const Icon(Icons.album),
-                  title: const Text('2018/2/11 すーさんの日記☺'),
-                  subtitle: const Text('今日はしほはじーじ・ばーばの家にいって楽しそうだった。このテキストはダミーですこのテキストはダミーですこのテキストはダミーです'),
-                  isThreeLine: true,
+                title: const Text('2018/2/11 すーさんの日記☺'),
+                subtitle: const Text('今日はしほはじーじ・ばーばの家にいって楽しそうだった。このテキストはダミーですこのテキストはダミーですこのテキストはダミーです'),
+                isThreeLine: true,
               ),
             ],
           ),
