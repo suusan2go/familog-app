@@ -60,7 +60,8 @@ class Home extends StatelessWidget {
     return new ListView(
       children: <Widget>[
         new Card(
-          child: new Container(
+          child: new InkWell(
+            onTap: () => {},
             child: new Row(
               children: <Widget>[
                 new Image.network(sampleUri, height: 100.0, width: 100.0, fit: BoxFit.cover),
