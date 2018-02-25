@@ -1,17 +1,17 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:familog/presentation/diary_entry.dart';
 
 typedef increment = void Function();
 
 
 class Home extends StatelessWidget {
-  Home(int counter, increment incrementCounter) {
-    this._incrementCounter = incrementCounter;
-    this._counter = counter;
-  }
+  Home(int counter, increment incrementCounter):
+    _incrementCounter = incrementCounter,
+    _counter = counter;
 
-  increment _incrementCounter;
-  int _counter;
+  final increment _incrementCounter;
+  final int _counter;
   
   Widget _buildNotLoggedIn(BuildContext context) {
     return new Center(
@@ -61,7 +61,11 @@ class Home extends StatelessWidget {
       children: <Widget>[
         new Card(
           child: new InkWell(
-            onTap: () => {},
+            onTap: () {
+              Navigator.of(context).push(new MaterialPageRoute(
+                builder: (context) => new DiaryEntry("日記ですよ！"),
+              ));
+            },
             child: new Row(
               children: <Widget>[
                 new Image.network(sampleUri, height: 100.0, width: 100.0, fit: BoxFit.cover),
