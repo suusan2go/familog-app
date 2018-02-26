@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:familog/presentation/my_drawer.dart';
 import 'package:familog/presentation/profile.dart';
 import 'package:familog/presentation/home.dart';
+import 'package:familog/presentation/diary_entry_form.dart';
 
 void main() => runApp(new MyApp());
 
@@ -79,7 +80,12 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: new Home(_counter, _incrementCounter),
       floatingActionButton: new FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: (){
+          Navigator.of(context).push(new MaterialPageRoute(
+            builder: (context) => new DiaryEntryForm(),
+            fullscreenDialog: true
+          ));
+        },
         tooltip: 'Increment',
         child: new Icon(Icons.edit),
       ), // This trailing comma makes auto-formatting nicer for build methods.
