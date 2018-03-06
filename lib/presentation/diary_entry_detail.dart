@@ -1,3 +1,5 @@
+import 'package:familog/domain/diary_entry.dart';
+import 'package:familog/domain/diary_entry_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'dart:math';
@@ -68,10 +70,11 @@ class DotsIndicator extends AnimatedWidget {
   }
 }
 
-class DiaryEntry extends StatefulWidget {
-  DiaryEntry(String title): title = title;
+class DiaryEntryDetail extends StatefulWidget {
+  DiaryEntryDetail(String title, int id): title = title, id = id;
 
   final String title;
+  final int id;
 
   @override
   State<StatefulWidget> createState() {
@@ -79,16 +82,22 @@ class DiaryEntry extends StatefulWidget {
   }
 }
 
-class _DiaryEntryState extends State<DiaryEntry> {
+class _DiaryEntryState extends State<DiaryEntryDetail> {
 
   PageController pageController;
   int page = 0;
+  DiaryEntry _entry;
+
   static const _kDuration = const Duration(milliseconds: 300);
   static const _kCurve = Curves.ease;
 
   @override
   void initState() {
     super.initState();
+    var entry = new DiaryEntryRepository().findByID(this.widget.id);
+    setState(() {
+      this._entry = entry;
+    });
     pageController = new PageController();
   }
 
@@ -105,14 +114,17 @@ class _DiaryEntryState extends State<DiaryEntry> {
     });
   }
 
+  String titleForAppBar(){
+    return "2017/02/11 すーさん";
+  }
+
   @override
   Widget build(BuildContext context) {
-    String sampleUri = "http://benesse.jp/kosodate/201709/img/KJ_20170908_02.jpg";// "https://www.photolibrary.jp/mhd6/img222/450-20110922175418165134.jpg";
     return new Scaffold(
         appBar: new AppBar(
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
-          title: new Text('2018/2/11  by すーさん'),
+          title: new Text(titleForAppBar()),
         ),
         body: new ListView(
             children: <Widget>[
@@ -122,11 +134,9 @@ class _DiaryEntryState extends State<DiaryEntry> {
                   child:  new Stack(
                     children: <Widget>[
                       new PageView(
-                          children: [
-                            new Image.network(sampleUri, height: 100.0, width: 100.0, fit: BoxFit.contain),
-                            new Container(color: Colors.blue),
-                            new Container(color: Colors.grey)
-                          ],
+                          children: _entry.images.map((image) {
+                            return new Image.network(image.url, height: 100.0, width: 100.0, fit: BoxFit.contain);
+                          }).toList(),
                           controller: pageController,
                           onPageChanged: onPageChanged
                       ),
@@ -155,16 +165,14 @@ class _DiaryEntryState extends State<DiaryEntry> {
                   )
               ),
               new Container(
-                child: new Text('2018/2/11 すーさんの日記☺', softWrap: true, style: new TextStyle(
+                child: new Text(_entry.title(), softWrap: true, style: new TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 17.0
                 ),),
                 padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0, bottom: 10.0),
               ),
               new Container(
-                child: new Text("今日はしほはじーじ・ばーばの家にいって楽しそうだった。\n"
-                    'このテキストはダミーですこのテキストはダミーですこのテキストはダミーです'
-                    '今日はしほはじーじ・ばーばの家にいって楽しそうだった。このテキストはダミーですこのテキストはダミーですこのテキストはダミーです今日はしほはじーじ・ばーばの家にいって楽しそうだった。このテキストはダミーですこのテキストはダミーですこのテキストはダミーです',
+                child: new Text(_entry.body,
                   softWrap: true,
                   style: new TextStyle(
                       fontSize: 16.0,

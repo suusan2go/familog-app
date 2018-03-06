@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:familog/presentation/diary_entry.dart';
+import 'package:familog/presentation/diary_entry_detail.dart';
 
 typedef increment = void Function();
 
@@ -63,7 +63,7 @@ class Home extends StatelessWidget {
           child: new InkWell(
             onTap: () {
               Navigator.of(context).push(new MaterialPageRoute(
-                builder: (context) => new DiaryEntry("日記ですよ！"),
+                builder: (context) => new DiaryEntryDetail("日記ですよ！", 1),
               ));
             },
             child: new Row(
