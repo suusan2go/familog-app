@@ -16,6 +16,6 @@ class DiaryEntry {
   final List<DiaryEntryImage> images;
 
   String title() {
-    return "2017/01/20 すーさんの日記☻";
+    return "2017/01/20 すーさんの日記☻ + $id}";
   }
 }
