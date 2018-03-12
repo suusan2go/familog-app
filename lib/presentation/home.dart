@@ -20,15 +20,25 @@ class _HomeState extends State<Home> {
 
   DiaryEntryRepository repository;
   List<DiaryEntry> _entries;
+  ScrollController _controller = new ScrollController();
 
   @override
   void initState() {
     super.initState();
     repository =new DiaryEntryRepository();
+    _controller.addListener(this._loadMoreEntries);
     var entries = repository.findAll();
     setState(() {
       this._entries = entries;
     });
+  }
+
+  void _loadMoreEntries() {
+    if(_controller.position.atEdge && _controller.position.pixels == _controller.position.maxScrollExtent) {
+      setState(() {
+        this._entries.addAll(repository.findAll());
+      });
+    }
   }
 
   Future<Null> _onRefresh() {
@@ -66,8 +76,10 @@ class _HomeState extends State<Home> {
         onRefresh: _onRefresh,
         child: new Scrollbar(
           child: new ListView.builder(
+            physics: const AlwaysScrollableScrollPhysics(),
             itemBuilder: _itemBuilder,
             itemCount: _entries.length,
+            controller: _controller,
           )
         )
     );
