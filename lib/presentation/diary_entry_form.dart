@@ -9,10 +9,10 @@ class DiaryEntryForm extends StatefulWidget {
 }
 
 class _DiaryEntryFormState extends State<DiaryEntryForm> {
-  String body;
+  String _body;
 
   void onChangeBody(String body) {
-    this.body = body;
+    this._body = body;
   }
 
   @override
@@ -40,6 +40,33 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
             ),
             new ListTile(
               title: new Text("今日の気分"),
+            ),
+            new ButtonBar(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                new RaisedButton.icon(
+                  icon: const Text('😁'),
+                  label: const Text('楽しい'),
+                  onPressed: () {
+                    // Perform some action
+                  },
+                  color: Colors.white,
+                ),
+                new RaisedButton.icon(
+                  color: Colors.white,
+                  icon: const Text('😩'),
+                  label: const Text('疲れた'),
+                  onPressed: null
+                ),
+                new RaisedButton.icon(
+                  color: Colors.white,
+                  icon: const Text('😥'),
+                  label: const Text('悲しい'),
+                  onPressed: () {
+                    // Perform some action
+                  },
+                ),
+              ],
             ),
           ],
         ),
