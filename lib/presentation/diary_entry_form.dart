@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:image_picker/image_picker.dart';
 
 class DiaryEntryForm extends StatefulWidget {
   @override
@@ -10,9 +13,54 @@ class DiaryEntryForm extends StatefulWidget {
 
 class _DiaryEntryFormState extends State<DiaryEntryForm> {
   String _body;
+  String _emoji;
+  File _imageFile1;
+  File _imageFile2;
+  File _imageFile3;
 
   void onChangeBody(String body) {
-    this._body = body;
+    setState(() {
+      this._body = body;
+    });
+  }
+
+  void onPressedSad() {
+    setState(() {
+      this._emoji = "sad";
+    });
+  }
+
+  void onPressedTired() {
+    setState(() {
+      this._emoji = "tired";
+    });
+  }
+
+  void onPressedHappy() {
+    setState(() {
+      this._emoji = "happy";
+    });
+  }
+
+  void getImage1() async {
+    var _fileName = await ImagePicker.pickImage();
+    setState(() {
+      _imageFile1 = _fileName;
+    });
+  }
+
+  void getImage2() async {
+    var _fileName = await ImagePicker.pickImage();
+    setState(() {
+      _imageFile2 = _fileName;
+    });
+  }
+
+  void getImage3() async {
+    var _fileName = await ImagePicker.pickImage();
+    setState(() {
+      _imageFile3 = _fileName;
+    });
   }
 
   @override
@@ -47,27 +95,65 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
                 new RaisedButton.icon(
                   icon: const Text('😁'),
                   label: const Text('楽しい'),
-                  onPressed: () {
-                    // Perform some action
-                  },
+                  onPressed: _emoji == "happy" ? null : this.onPressedHappy,
                   color: Colors.white,
                 ),
                 new RaisedButton.icon(
                   color: Colors.white,
                   icon: const Text('😩'),
                   label: const Text('疲れた'),
-                  onPressed: null
+                  onPressed: _emoji == "tired" ? null : this.onPressedTired,
                 ),
                 new RaisedButton.icon(
                   color: Colors.white,
                   icon: const Text('😥'),
                   label: const Text('悲しい'),
-                  onPressed: () {
-                    // Perform some action
-                  },
+                  onPressed: _emoji == "sad" ? null : this.onPressedSad,
                 ),
               ],
             ),
+            new ListTile(
+              title: new Text("写真"),
+            ),
+            new Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                new Expanded(
+                  child: new Container(
+                    padding: new EdgeInsets.only(left: 10.0, right: 10.0),
+                    height: 100.0,
+                    child: _imageFile1 == null ? new IconButton(
+                        icon: new Icon(Icons.image, size: 80.0),
+                        tooltip: 'Increase volume by 10%',
+                        onPressed: getImage1
+                    ): new Image.file(_imageFile1, fit: BoxFit.contain),
+                  )
+                ),
+                new Expanded(
+                    child: new Container(
+                      padding: new EdgeInsets.only(left: 10.0, right: 10.0),
+                      height: 100.0,
+                      child: _imageFile2 == null ? new IconButton(
+                          icon: new Icon(Icons.image, size: 80.0),
+                          tooltip: 'Increase volume by 10%',
+                          onPressed: getImage2
+                      ): new Image.file(_imageFile2, fit: BoxFit.contain),
+                    )
+                ),
+                new Expanded(
+                    child: new Container(
+                      padding: new EdgeInsets.only(left: 10.0, right: 10.0),
+                      height: 100.0,
+                      child: _imageFile3 == null ? new IconButton(
+                          icon: new Icon(Icons.image, size: 80.0),
+                          tooltip: 'Increase volume by 10%',
+                          onPressed: getImage3
+                      ): new Image.file(_imageFile2, fit: BoxFit.contain),
+                    )
+                ),
+              ],
+            )
           ],
         ),
       ),
