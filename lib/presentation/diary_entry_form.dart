@@ -63,6 +63,24 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
     });
   }
 
+  void deleteImage1() async {
+    setState(() {
+      _imageFile1 = null;
+    });
+  }
+
+  void deleteImage2() async {
+    setState(() {
+      _imageFile2 = null;
+    });
+  }
+
+  void deleteImage3() async {
+    setState(() {
+      _imageFile3 = null;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -120,36 +138,69 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 new Expanded(
-                  child: new Container(
-                    padding: new EdgeInsets.only(left: 10.0, right: 10.0),
-                    height: 100.0,
-                    child: _imageFile1 == null ? new IconButton(
-                        icon: new Icon(Icons.image, size: 80.0),
-                        tooltip: 'Increase volume by 10%',
-                        onPressed: getImage1
-                    ): new Image.file(_imageFile1, fit: BoxFit.contain),
-                  )
-                ),
-                new Expanded(
                     child: new Container(
-                      padding: new EdgeInsets.only(left: 10.0, right: 10.0),
-                      height: 100.0,
-                      child: _imageFile2 == null ? new IconButton(
-                          icon: new Icon(Icons.image, size: 80.0),
-                          tooltip: 'Increase volume by 10%',
-                          onPressed: getImage2
-                      ): new Image.file(_imageFile2, fit: BoxFit.contain),
+                        color: Colors.white,
+                        padding: new EdgeInsets.only(left: 10.0, right: 10.0),
+                        height: 100.0,
+                        child: _imageFile1 == null ? new IconButton(
+                            icon: new Icon(Icons.image, size: 80.0),
+                            tooltip: 'Increase volume by 10%',
+                            onPressed: getImage1
+                        ): new Stack(
+                          fit: StackFit.expand,
+                          children: <Widget>[
+                            Image.file(_imageFile1, fit: BoxFit.contain),
+                            new IconButton(
+                              alignment: new Alignment(1.5, -1.0),
+                              icon: new Icon(Icons.close, color: Colors.grey),
+                              onPressed: deleteImage1,
+                            )
+                          ],
+                        )
                     )
                 ),
                 new Expanded(
                     child: new Container(
-                      padding: new EdgeInsets.only(left: 10.0, right: 10.0),
-                      height: 100.0,
-                      child: _imageFile3 == null ? new IconButton(
-                          icon: new Icon(Icons.image, size: 80.0),
-                          tooltip: 'Increase volume by 10%',
-                          onPressed: getImage3
-                      ): new Image.file(_imageFile2, fit: BoxFit.contain),
+                        color: Colors.white,
+                        padding: new EdgeInsets.only(left: 10.0, right: 10.0),
+                        height: 100.0,
+                        child: _imageFile2 == null ? new IconButton(
+                            icon: new Icon(Icons.image, size: 80.0),
+                            tooltip: 'Increase volume by 10%',
+                            onPressed: getImage2
+                        ): new Stack(
+                          fit: StackFit.expand,
+                          children: <Widget>[
+                            Image.file(_imageFile2, fit: BoxFit.contain),
+                            new IconButton(
+                              alignment: new Alignment(1.5, -1.0),
+                              icon: new Icon(Icons.close, color: Colors.grey),
+                              onPressed: deleteImage2,
+                            )
+                          ],
+                        )
+                    )
+                ),
+                new Expanded(
+                    child: new Container(
+                        color: Colors.white,
+                        padding: new EdgeInsets.only(left: 10.0, right: 10.0),
+                        height: 100.0,
+                        child: _imageFile3 == null ? new IconButton(
+                            icon: new Icon(Icons.image, size: 80.0),
+                            tooltip: 'Increase volume by 10%',
+                            onPressed: getImage3
+                        ): new Stack(
+                          fit: StackFit.expand,
+                          children: <Widget>[
+                            Image.file(_imageFile3, fit: BoxFit.contain),
+                            new IconButton(
+                              alignment: new Alignment(1.5, -1.0),
+                              icon: new Icon(Icons.close, color: Colors.grey),
+                              onPressed: deleteImage3,
+                            )
+                          ],
+                        )
                     )
                 ),
               ],
