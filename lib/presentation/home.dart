@@ -5,8 +5,11 @@ import 'package:familog/domain/diary_entry_repository.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:familog/presentation/diary_entry_detail.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 typedef increment = void Function();
+
+final googleSignIn = new GoogleSignIn();
 
 class Home extends StatefulWidget {
 
@@ -56,9 +59,7 @@ class _HomeState extends State<Home> {
       child: new Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          new Text(
-            'You have pushed the button this many times:',
-          ),
+          new RaisedButton(onPressed: (){googleSignIn.signIn();}, child: new Text("ログイン"))
         ],
       ),
     );
@@ -71,7 +72,9 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    if(false) return _buildNotLoggedIn(context);
+    _ensureLoggedIn();
+    GoogleSignInAccount user = googleSignIn.currentUser;
+    if(user == null) return _buildNotLoggedIn(context);
     return new RefreshIndicator(
         onRefresh: _onRefresh,
         child: new Scrollbar(
@@ -134,4 +137,12 @@ class DiaryEntryItem extends StatelessWidget {
       ),
     );
   }
+}
+
+Future<dynamic> _ensureLoggedIn() async {
+  GoogleSignInAccount user = googleSignIn.currentUser;
+  if (user == null)
+    user = await googleSignIn.signInSilently();
+  if (user == null)
+    user = await googleSignIn.signIn();
 }
