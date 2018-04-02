@@ -62,7 +62,15 @@ class _HomeState extends State<Home> {
     });
   }
 
-  Future<Null> _ensureLoggedIn() async {
+  void _loggeIn() {
+    _ensureLoggedIn().then((user){
+      setState((){
+        this._user = user;
+      });
+    });
+  }
+
+  Future<FirebaseUser> _ensureLoggedIn() async {
     GoogleSignInAccount user = googleSignIn.currentUser;
     if (user == null)
       user = await googleSignIn.signInSilently();
@@ -77,10 +85,7 @@ class _HomeState extends State<Home> {
         accessToken: credentials.accessToken,
       );
     }
-    var _auser = await auth.currentUser();//new
-    setState(() async {
-      this._user = _auser;
-    });
+    return await auth.currentUser();
   }
 
   Widget _buildNotLoggedIn(BuildContext context) {
@@ -88,7 +93,7 @@ class _HomeState extends State<Home> {
       child: new Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          new RaisedButton(onPressed: (){ _ensureLoggedIn(); }, child: new Text("ログイン"))
+          new RaisedButton(onPressed: (){ _loggeIn(); }, child: new Text("ログイン"))
         ],
       ),
     );

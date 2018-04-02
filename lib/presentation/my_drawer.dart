@@ -28,30 +28,34 @@ class MyDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> lists = <Widget>[
-      new ListTile(
-          title: new Text("ユーザー設定"),
-          onTap: () {
-            Navigator.of(context).pop(); // Hide drawer
-            Navigator.of(context).pushNamed('/profile');
-          }),
+    final List<Widget> lists = <Widget>[]
+    if(user != null)
+      lists.add(
+          new ListTile(
+              title: new Text("ユーザー設定"),
+              onTap: () {
+                Navigator.of(context).pop(); // Hide drawer
+                Navigator.of(context).pushNamed('/profile');
+              })
+      );
+    lists.add(
       new ListTile(
           title: new Text("利用規約"),
           onTap: () {
             Navigator.of(context).pop(); // Hide drawer
           }),
-    ];
+    );
 
     return new Drawer(
       child: new Column(
         children: <Widget>[
           new UserAccountsDrawerHeader(
-            accountName: new Text(user != null ? user.displayName : ""),
-            accountEmail: new Text(user != null ? user.email : ""),
-            currentAccountPicture: new CircleAvatar(
+            accountName: user != null ? new Text(user.displayName) : null,
+            accountEmail: user != null ? new Text(user.email) : null,
+            currentAccountPicture: user !=null ? new CircleAvatar(
                 backgroundColor: Colors.white,
-                backgroundImage: new NetworkImage(user != null ? user.photoUrl : "")
-            ),
+                backgroundImage: new NetworkImage(user.photoUrl)
+            ) : null,
 //              decoration: new BoxDecoration(
 //                image: new DecorationImage(
 //                  image: new AssetImage(
