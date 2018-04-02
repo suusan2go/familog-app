@@ -2,17 +2,25 @@ import 'dart:async';
 
 import 'package:familog/domain/diary_entry.dart';
 import 'package:familog/domain/diary_entry_repository.dart';
+import 'package:familog/presentation/diary_entry_form.dart';
+import 'package:familog/presentation/my_drawer.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:familog/presentation/diary_entry_detail.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 typedef increment = void Function();
 
 final googleSignIn = new GoogleSignIn();
+final auth = FirebaseAuth.instance;
+final analytics = new FirebaseAnalytics();
 
 class Home extends StatefulWidget {
+  Home({Key key, this.title}) : super(key: key);
 
+  final String title;
   @override
   State<StatefulWidget> createState() {
     return new _HomeState();
@@ -20,7 +28,8 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
+  bool _loggedIn = false;
+  FirebaseUser _user;
   DiaryEntryRepository repository;
   List<DiaryEntry> _entries;
   ScrollController _controller = new ScrollController();
@@ -45,7 +54,7 @@ class _HomeState extends State<Home> {
   }
 
   Future<Null> _onRefresh() {
-    final Completer<Null> completer = new Completer<Null>();
+    var completer = new Completer<FirebaseUser>();
     new Timer(const Duration(seconds: 1), () { completer.complete(null); });
     return completer.future.then((_) {
       setState(() {
@@ -54,12 +63,32 @@ class _HomeState extends State<Home> {
     });
   }
 
+  Future<Null> _ensureLoggedIn() async {
+    GoogleSignInAccount user = googleSignIn.currentUser;
+    if (user == null)
+      user = await googleSignIn.signInSilently();
+    if (user == null) {
+      await googleSignIn.signIn();
+      analytics.logLogin();
+    }
+    if (await auth.currentUser() == null) {
+      GoogleSignInAuthentication credentials = await googleSignIn.currentUser.authentication;
+      await auth.signInWithGoogle(
+        idToken: credentials.idToken,
+        accessToken: credentials.accessToken,
+      );
+      setState(() {
+        this._loggedIn = true;
+      });
+    }                                                               //new
+  }
+
   Widget _buildNotLoggedIn(BuildContext context) {
     return new Center(
       child: new Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          new RaisedButton(onPressed: (){googleSignIn.signIn();}, child: new Text("ログイン"))
+          new RaisedButton(onPressed: (){ _ensureLoggedIn(); }, child: new Text("ログイン"))
         ],
       ),
     );
@@ -72,19 +101,35 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    _ensureLoggedIn();
-    GoogleSignInAccount user = googleSignIn.currentUser;
-    if(user == null) return _buildNotLoggedIn(context);
-    return new RefreshIndicator(
-        onRefresh: _onRefresh,
-        child: new Scrollbar(
-          child: new ListView.builder(
-            physics: const AlwaysScrollableScrollPhysics(),
-            itemBuilder: _itemBuilder,
-            itemCount: _entries.length,
-            controller: _controller,
+    return new Scaffold(
+      drawer: new MyDrawer(),
+      appBar: new AppBar(
+        // Here we take the value from the MyHomePage object that was created by
+        // the App.build method, and use it to set our appbar title.
+        title: new Text(widget.title),
+      ),
+      body:
+      _loggedIn ?  _buildNotLoggedIn(context): new RefreshIndicator(
+          onRefresh: _onRefresh,
+          child: new Scrollbar(
+              child: new ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemBuilder: _itemBuilder,
+                itemCount: _entries.length,
+                controller: _controller,
+              )
           )
-        )
+      ),
+      floatingActionButton: new FloatingActionButton(
+        onPressed: (){
+          Navigator.of(context).push(new MaterialPageRoute(
+              builder: (context) => new DiaryEntryForm(),
+              fullscreenDialog: true
+          ));
+        },
+        tooltip: 'Increment',
+        child: new Icon(Icons.edit),
+      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
@@ -137,12 +182,4 @@ class DiaryEntryItem extends StatelessWidget {
       ),
     );
   }
-}
-
-Future<dynamic> _ensureLoggedIn() async {
-  GoogleSignInAccount user = googleSignIn.currentUser;
-  if (user == null)
-    user = await googleSignIn.signInSilently();
-  if (user == null)
-    user = await googleSignIn.signIn();
 }

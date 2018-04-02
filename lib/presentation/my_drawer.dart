@@ -1,8 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-class MyDrawer extends StatelessWidget {
+final auth = FirebaseAuth.instance;
 
+class MyDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<Widget> lists = <Widget>[
