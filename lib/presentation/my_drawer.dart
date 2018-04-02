@@ -4,7 +4,28 @@ import 'package:flutter/widgets.dart';
 
 final auth = FirebaseAuth.instance;
 
+class Frog extends StatelessWidget {
+  const Frog({
+    Key key,
+    this.color: const Color(0xFF2DBD3A),
+    this.child,
+  }) : super(key: key);
+
+  final Color color;
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return new Container(color: color, child: child);
+  }
+}
+
 class MyDrawer extends StatelessWidget {
+  const MyDrawer({ Key key, this.user }): super(key: key);
+
+  final FirebaseUser user;
+
   @override
   Widget build(BuildContext context) {
     final List<Widget> lists = <Widget>[
@@ -25,11 +46,11 @@ class MyDrawer extends StatelessWidget {
       child: new Column(
         children: <Widget>[
           new UserAccountsDrawerHeader(
-            accountName: new Text("suusan2go"),
-            accountEmail: new Text("ksuzuki180@gmail.com"),
+            accountName: new Text(user != null ? user.displayName : ""),
+            accountEmail: new Text(user != null ? user.email : ""),
             currentAccountPicture: new CircleAvatar(
                 backgroundColor: Colors.white,
-                backgroundImage: new NetworkImage("https://avatars1.githubusercontent.com/u/8841470?s=460&v=4")
+                backgroundImage: new NetworkImage(user != null ? user.photoUrl : "")
             ),
 //              decoration: new BoxDecoration(
 //                image: new DecorationImage(

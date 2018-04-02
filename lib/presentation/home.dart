@@ -28,7 +28,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  bool _loggedIn = false;
   FirebaseUser _user;
   DiaryEntryRepository repository;
   List<DiaryEntry> _entries;
@@ -77,10 +76,11 @@ class _HomeState extends State<Home> {
         idToken: credentials.idToken,
         accessToken: credentials.accessToken,
       );
-      setState(() {
-        this._loggedIn = true;
-      });
-    }                                                               //new
+    }
+    var _auser = await auth.currentUser();//new
+    setState(() async {
+      this._user = _auser;
+    });
   }
 
   Widget _buildNotLoggedIn(BuildContext context) {
@@ -102,14 +102,14 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      drawer: new MyDrawer(),
+      drawer: new MyDrawer(user: this._user,),
       appBar: new AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: new Text(widget.title),
       ),
       body:
-      _loggedIn ?  _buildNotLoggedIn(context): new RefreshIndicator(
+      _user == null ?  _buildNotLoggedIn(context): new RefreshIndicator(
           onRefresh: _onRefresh,
           child: new Scrollbar(
               child: new ListView.builder(
