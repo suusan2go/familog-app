@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DiaryEntryForm extends StatefulWidget {
   @override
@@ -79,6 +80,12 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
     setState(() {
       _imageFile3 = null;
     });
+  }
+
+  void _handlePublish() {
+    Firestore.instance.collection('diary_entries').document()
+        .setData({ 'title': 'title', 'author': 'author' });
+    Navigator.of(context).pop();
   }
 
   @override
@@ -209,7 +216,7 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
           ),
           new Container(
             padding: const EdgeInsets.only(left: 20.0, top: 0.0, right: 20.0, bottom: 20.0),
-            child: new RaisedButton(onPressed: (){}, child: new Text("公開"), color: Theme.of(context).accentColor,textColor: Colors.white,),
+            child: new RaisedButton(onPressed: _handlePublish, child: new Text("公開"), color: Theme.of(context).accentColor,textColor: Colors.white,),
           ),
         ],
       ),

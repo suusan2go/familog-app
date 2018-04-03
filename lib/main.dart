@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:familog/presentation/my_drawer.dart';
 import 'package:familog/presentation/profile.dart';
 import 'package:familog/presentation/home.dart';
-import 'package:familog/presentation/diary_entry_form.dart';
 
 void main() => runApp(new MyApp());
 

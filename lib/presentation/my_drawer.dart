@@ -28,7 +28,7 @@ class MyDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> lists = <Widget>[]
+    final List<Widget> lists = <Widget>[];
     if(user != null)
       lists.add(
           new ListTile(

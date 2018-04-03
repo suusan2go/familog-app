@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:familog/domain/diary.dart';
 import 'package:familog/domain/diary_entry.dart';
 import 'package:familog/domain/diary_entry_repository.dart';
 import 'package:familog/presentation/diary_entry_form.dart';
@@ -29,6 +31,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   FirebaseUser _user;
+  Diary _currentDiary;
   DiaryEntryRepository repository;
   List<DiaryEntry> _entries;
   ScrollController _controller = new ScrollController();
@@ -62,10 +65,21 @@ class _HomeState extends State<Home> {
     });
   }
 
-  void _loggeIn() {
-    _ensureLoggedIn().then((user){
+  Future<Null> _logIn() async {
+    _ensureLoggedIn().then((user) async {
+      var diaries = await Firestore.instance.collection('diaries').where("subscribers.${user.uid}", isEqualTo: true).getDocuments();
+      if(diaries.documents.length == 0) {
+        Firestore.instance.collection('diaries').document()
+            .setData({
+          'title': '${user.displayName}の日記',
+          'subscribers': { user.uid: true}
+        });
+      }
+      var diaryRef = await Firestore.instance.collection('diaries').where("subscribers.${user.uid}", isEqualTo: true).getDocuments();
+      var diaryDocument = diaryRef.documents.first;
       setState((){
         this._user = user;
+        this._currentDiary = new Diary(diaryDocument["id"], diaryDocument["title"]);
       });
     });
   }
@@ -93,7 +107,7 @@ class _HomeState extends State<Home> {
       child: new Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          new RaisedButton(onPressed: (){ _loggeIn(); }, child: new Text("ログイン"))
+          new RaisedButton(onPressed: _logIn, child: new Text("ログイン"))
         ],
       ),
     );
