@@ -79,7 +79,7 @@ class _HomeState extends State<Home> {
       var diaryDocument = diaryRef.documents.first;
       setState((){
         this._user = user;
-        this._currentDiary = new Diary(diaryDocument["id"], diaryDocument["title"]);
+        this._currentDiary = new Diary(diaryDocument.documentID, diaryDocument["title"]);
       });
     });
   }
@@ -142,7 +142,7 @@ class _HomeState extends State<Home> {
       floatingActionButton: new FloatingActionButton(
         onPressed: (){
           Navigator.of(context).push(new MaterialPageRoute(
-              builder: (context) => new DiaryEntryForm(),
+              builder: (context) => new DiaryEntryForm(currentDiary: this._currentDiary),
               fullscreenDialog: true
           ));
         },

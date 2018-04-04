@@ -1,11 +1,16 @@
 import 'dart:io';
 
+import 'package:familog/domain/diary.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DiaryEntryForm extends StatefulWidget {
+  const DiaryEntryForm({ Key key, this.currentDiary }): super(key: key);
+
+  final Diary currentDiary;
+
   @override
   State<StatefulWidget> createState() {
     return new _DiaryEntryFormState();
@@ -83,7 +88,7 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
   }
 
   void _handlePublish() {
-    Firestore.instance.collection('diary_entries').document()
+    Firestore.instance.collection('diaries/${widget.currentDiary.id}/diary_entries').document()
         .setData({ 'title': 'title', 'author': 'author' });
     Navigator.of(context).pop();
   }
