@@ -1,7 +1,9 @@
-import 'package:familog/domain/diary_entry_image.dart';
+import 'package:intl/intl.dart';
+
 
 class DiaryEntry {
-  const DiaryEntry(
+  const
+  DiaryEntry(
       this.id,
       this.reaction,
       this.body,
@@ -9,13 +11,20 @@ class DiaryEntry {
       this.images
       );
 
-  final int id;
+  final String id;
   final String reaction;
   final String body;
   final DateTime wroteAt;
-  final List<DiaryEntryImage> images;
+  final List<String> images;
 
   String title() {
-    return "2017/01/20 すーさんの日記☻ + $id}";
+    var formatter = new DateFormat('yyyy-MM-dd');
+    return "${formatter.format(wroteAt)} すーさんの日記";
+  }
+
+  String primaryImageUrl() {
+    if(images.isEmpty)
+      return 'http://benesse.jp/kosodate/201709/img/KJ_20170908_02.jpg';
+    return images.first;
   }
 }

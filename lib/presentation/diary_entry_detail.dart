@@ -115,7 +115,7 @@ class _DiaryEntryState extends State<DiaryEntryDetail> {
   }
 
   String titleForAppBar(){
-    return "2017/02/11 すーさん";
+    return _entry.title();
   }
 
   @override
@@ -135,7 +135,7 @@ class _DiaryEntryState extends State<DiaryEntryDetail> {
                     children: <Widget>[
                       new PageView(
                           children: _entry.images.map((image) {
-                            return new Image.network(image.url, height: 100.0, width: 100.0, fit: BoxFit.contain);
+                            return new Image.network(image, height: 100.0, width: 100.0, fit: BoxFit.contain);
                           }).toList(),
                           controller: pageController,
                           onPageChanged: onPageChanged

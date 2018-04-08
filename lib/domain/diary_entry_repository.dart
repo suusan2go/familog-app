@@ -8,23 +8,23 @@ class DiaryEntryRepository {
   List<DiaryEntry> findAll() {
     return [
       new DiaryEntry(
-          new Random.secure().nextInt(10000),
+          new Random.secure().nextInt(10000).toString(),
           "今日はほげほげほげ",
           ":smile:",
           new DateTime.now(),
           [
-            new DiaryEntryImage(1, 'http://benesse.jp/kosodate/201709/img/KJ_20170908_02.jpg'),
-            new DiaryEntryImage(1, 'http://benesse.jp/kosodate/201709/img/KJ_20170908_02.jpg'),
+            'http://benesse.jp/kosodate/201709/img/KJ_20170908_02.jpg',
+            'http://benesse.jp/kosodate/201709/img/KJ_20170908_02.jpg',
           ]
       ),
       new DiaryEntry(
-          new Random.secure().nextInt(10000),
+          new Random.secure().nextInt(10000).toString(),
           "今日はほげほげほげ2\nほげほげ\nほげほげ",
           ":smile:",
           new DateTime.now(),
           [
-            new DiaryEntryImage(1, 'http://benesse.jp/kosodate/201709/img/KJ_20170908_02.jpg'),
-            new DiaryEntryImage(1, 'http://benesse.jp/kosodate/201709/img/KJ_20170908_02.jpg'),
+            'http://benesse.jp/kosodate/201709/img/KJ_20170908_02.jpg',
+            'http://benesse.jp/kosodate/201709/img/KJ_20170908_02.jpg',
           ]
       )
     ];
@@ -33,13 +33,13 @@ class DiaryEntryRepository {
   // ダミー実装
   DiaryEntry findByID(int id) {
     return new DiaryEntry(
-        new Random.secure().nextInt(10000),
+        new Random.secure().nextInt(10000).toString(),
         "今日はほげほげほげ",
         ":smile:",
         new DateTime.now(),
         [
-          new DiaryEntryImage(1, 'http://benesse.jp/kosodate/201709/img/KJ_20170908_02.jpg'),
-          new DiaryEntryImage(1, 'http://benesse.jp/kosodate/201709/img/KJ_20170908_02.jpg'),
+          'http://benesse.jp/kosodate/201709/img/KJ_20170908_02.jpg',
+          'http://benesse.jp/kosodate/201709/img/KJ_20170908_02.jpg',
         ]
     );
   }

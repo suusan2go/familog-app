@@ -9,7 +9,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: 'FamilogApp',
+      title: 'FamiLogApp',
       theme: new ThemeData(
         // This is the theme of your application.
         //
@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         // counter didn't reset back to zero; the application is not restarted.
         primarySwatch: Colors.green,
       ),
-      home: new Home(title: 'Familog'),
+      home: new Home(title: 'FamiLog'),
       routes: <String, WidgetBuilder> {
         '/profile': (BuildContext context) => new Profile(),
       },

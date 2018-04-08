@@ -116,7 +116,8 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
       'body': _body,
       'emoji': _emoji,
       'authorId': currentUser.uid,
-      'images': imageUrls.where((url) { return url != null; } ).toList()
+      'images': imageUrls.where((url) { return url != null; } ).toList(),
+      'wroteAt': DateTime.now(),
     });
     Navigator.of(context).pop();
   }
@@ -126,8 +127,6 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
     return new Scaffold(
       key: scaffoldKey,
       appBar: new AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: new Text("日記を投稿"),
       ),
       body: new ListView(
@@ -246,10 +245,10 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
               ),
             ],
           ),
-          new Container(
-            padding: const EdgeInsets.all(20.0),
-            child: new RaisedButton(onPressed: (){}, child: new Text("下書き")),
-          ),
+//          new Container(
+//            padding: const EdgeInsets.all(20.0),
+//            child: new RaisedButton(onPressed: (){}, child: new Text("下書き")),
+//          ),
           new Container(
             padding: const EdgeInsets.only(left: 20.0, top: 0.0, right: 20.0, bottom: 20.0),
             child: new RaisedButton(onPressed: () {_handlePublish(context);}, child: new Text("公開"), color: Theme.of(context).accentColor,textColor: Colors.white,),

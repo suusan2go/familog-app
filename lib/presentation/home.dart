@@ -12,6 +12,7 @@ import 'package:familog/presentation/diary_entry_detail.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 typedef increment = void Function();
 
@@ -75,6 +76,12 @@ class _HomeState extends State<Home> {
           'subscribers': { user.uid: true}
         });
       }
+      Firestore.instance.collection('users').document()
+          .setData({
+        'name': user.displayName,
+        'photoUrl': user.photoUrl,
+        'uid': user.uid,
+      });
       var diaryRef = await Firestore.instance.collection('diaries').where("subscribers.${user.uid}", isEqualTo: true).getDocuments();
       var diaryDocument = diaryRef.documents.first;
       setState((){
@@ -107,7 +114,11 @@ class _HomeState extends State<Home> {
       child: new Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          new RaisedButton(onPressed: _logIn, child: new Text("ログイン"))
+          new RaisedButton.icon(
+              onPressed: _logIn,
+              label: new Text("Googleアカウントでログイン", style: new TextStyle(fontSize: 18.0),),
+              icon: new Icon(FontAwesomeIcons.google)
+          )
         ],
       ),
     );
@@ -121,7 +132,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      drawer: new MyDrawer(user: this._user,),
+      drawer: _user == null ? null : new MyDrawer(user: this._user,),
       appBar: new AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
@@ -131,15 +142,10 @@ class _HomeState extends State<Home> {
       _user == null ?  _buildNotLoggedIn(context): new RefreshIndicator(
           onRefresh: _onRefresh,
           child: new Scrollbar(
-              child: new ListView.builder(
-                physics: const AlwaysScrollableScrollPhysics(),
-                itemBuilder: _itemBuilder,
-                itemCount: _entries.length,
-                controller: _controller,
-              )
+              child: new DiaryEntryList(currentDiary: _currentDiary)
           )
       ),
-      floatingActionButton: new FloatingActionButton(
+      floatingActionButton: _user == null ? null : new FloatingActionButton(
         onPressed: (){
           Navigator.of(context).push(new MaterialPageRoute(
               builder: (context) => new DiaryEntryForm(currentDiary: this._currentDiary),
@@ -149,6 +155,36 @@ class _HomeState extends State<Home> {
         tooltip: 'Increment',
         child: new Icon(Icons.edit),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+class DiaryEntryList extends StatelessWidget {
+  const DiaryEntryList({ Key key, this.currentDiary }): super(key: key);
+
+  final Diary currentDiary;
+
+  @override
+  Widget build(BuildContext context){
+    return new StreamBuilder<QuerySnapshot>(
+      stream: Firestore.instance.collection('diaries/${currentDiary.id}/diary_entries').orderBy("wroteAt", descending: true).snapshots,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return new Text('Loading...');
+        return new ListView(
+          children: snapshot.data.documents.map((document) {
+            var entry = new DiaryEntry(
+                document.documentID,
+                document.data["emoji"],
+                document.data["body"],
+                document.data["wroteAt"],
+                (document.data["images"] as List<dynamic>).map((value){
+                  return value as String;
+                }).toList()
+            );
+            return new DiaryEntryItem(entry);
+          }).toList(),
+        );
+      },
     );
   }
 }
@@ -169,7 +205,7 @@ class DiaryEntryItem extends StatelessWidget {
         },
         child: new Row(
           children: <Widget>[
-            new Image.network(diaryEntry.images.first.url, height: 100.0, width: 100.0, fit: BoxFit.cover),
+            new Image.network(diaryEntry.primaryImageUrl(), height: 100.0, width: 100.0, fit: BoxFit.cover),
             new Expanded(
                 child: new Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
