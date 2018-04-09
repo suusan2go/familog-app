@@ -58,21 +58,21 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
   }
 
   void _getImage1() async {
-    var _fileName = await ImagePicker.pickImage();
+    var _fileName = await ImagePicker.pickImage(maxHeight: 500.0, maxWidth: 500.0);
     setState(() {
       _imageFile1 = _fileName;
     });
   }
 
   void _getImage2() async {
-    var _fileName = await ImagePicker.pickImage();
+    var _fileName = await ImagePicker.pickImage(maxHeight: 500.0, maxWidth: 500.0);
     setState(() {
       _imageFile2 = _fileName;
     });
   }
 
   void _getImage3() async {
-    var _fileName = await ImagePicker.pickImage();
+    var _fileName = await ImagePicker.pickImage(maxHeight: 500.0, maxWidth: 500.0);
     setState(() {
       _imageFile3 = _fileName;
     });
