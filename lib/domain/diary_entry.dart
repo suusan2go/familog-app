@@ -1,3 +1,4 @@
+import 'package:familog/domain/diary_entry_author.dart';
 import 'package:intl/intl.dart';
 
 
@@ -8,7 +9,8 @@ class DiaryEntry {
       this.reaction,
       this.body,
       this.wroteAt,
-      this.images
+      this.images,
+      this.author
       );
 
   final String id;
@@ -16,6 +18,7 @@ class DiaryEntry {
   final String body;
   final DateTime wroteAt;
   final List<String> images;
+  final DiaryEntryAuthor author;
 
   String title() {
     var formatter = new DateFormat('yyyy-MM-dd');

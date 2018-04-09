@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:familog/domain/diary.dart';
 import 'package:familog/domain/diary_entry.dart';
+import 'package:familog/domain/diary_entry_author.dart';
 import 'package:familog/domain/diary_entry_repository.dart';
 import 'package:familog/presentation/diary_entry_form.dart';
 import 'package:familog/presentation/my_drawer.dart';
@@ -76,11 +77,10 @@ class _HomeState extends State<Home> {
           'subscribers': { user.uid: true}
         });
       }
-      Firestore.instance.collection('users').document()
+      Firestore.instance.collection('users').document(user.uid)
           .setData({
         'name': user.displayName,
         'photoUrl': user.photoUrl,
-        'uid': user.uid,
       });
       var diaryRef = await Firestore.instance.collection('diaries').where("subscribers.${user.uid}", isEqualTo: true).getDocuments();
       var diaryDocument = diaryRef.documents.first;
@@ -122,11 +122,6 @@ class _HomeState extends State<Home> {
         ],
       ),
     );
-  }
-
-  Widget _itemBuilder(BuildContext context, int index) {
-    var entry = this._entries[index];
-    return new DiaryEntryItem(entry);
   }
 
   @override
@@ -172,53 +167,85 @@ class DiaryEntryList extends StatelessWidget {
         if (!snapshot.hasData) return new Text('Loading...');
         return new ListView(
           children: snapshot.data.documents.map((document) {
-            var entry = new DiaryEntry(
-                document.documentID,
-                document.data["emoji"],
-                document.data["body"],
-                document.data["wroteAt"],
-                (document.data["images"] as List<dynamic>).map((value){
-                  return value as String;
-                }).toList()
-            );
-            return new DiaryEntryItem(entry);
+            return new DiaryEntryItem(document, currentDiary);
           }).toList(),
         );
       },
+
     );
   }
 }
 
-class DiaryEntryItem extends StatelessWidget {
-  DiaryEntryItem(DiaryEntry diaryEntry): diaryEntry = diaryEntry;
+class DiaryEntryItem extends StatefulWidget {
+  DiaryEntryItem(DocumentSnapshot document, Diary diary): document = document, diary = diary;
 
-  final DiaryEntry diaryEntry;
+  final DocumentSnapshot document;
+  final Diary diary;
+
+  @override
+  DiaryEntryItemState createState() {
+    return new DiaryEntryItemState();
+  }
+}
+
+class DiaryEntryItemState extends State<DiaryEntryItem> {
+  DiaryEntry _entry;
+
+  void updateState(DiaryEntry entry) {
+    setState(() {
+      this._entry = entry;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    var document = widget.document;
+    Firestore.instance.document("users/${document.data["authorId"]}").get().then((userDocument){
+      var entry = new DiaryEntry(
+          document.documentID,
+          document.data["emoji"],
+          document.data["body"],
+          document.data["wroteAt"],
+          (document.data["images"] as List<dynamic>).map((value){
+            return value as String;
+          }).toList(),
+          new DiaryEntryAuthor(
+            userDocument.documentID,
+            userDocument.data["name"],
+            userDocument.data["photoUrl"],
+          )
+      );
+      updateState(entry);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return new Card(
+
+    return _entry != null ? new Card(
       child: new InkWell(
         onTap: () {
           Navigator.of(context).push(new MaterialPageRoute(
-            builder: (context) => new DiaryEntryDetail("日記ですよ！", 1),
+            builder: (context) => new DiaryEntryDetail(widget.diary.id, _entry.id),
           ));
         },
         child: new Row(
           children: <Widget>[
-            new Image.network(diaryEntry.primaryImageUrl(), height: 100.0, width: 100.0, fit: BoxFit.cover),
+            new Image.network(_entry.primaryImageUrl(), height: 100.0, width: 100.0, fit: BoxFit.cover),
             new Expanded(
                 child: new Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     new Container(
-                      child: new Text(diaryEntry.title(), softWrap: true, style: new TextStyle(
+                      child: new Text(_entry.title(), softWrap: true, style: new TextStyle(
                           fontWeight: FontWeight.w300,
                           fontSize: 16.0
                       ),),
                       padding: const EdgeInsets.only(left: 10.0, right: 10.0),
                     ),
                     new Container(
-                      child: new Text(diaryEntry.body,
+                      child: new Text(_entry.body,
                         softWrap: true,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 3,
@@ -235,6 +262,6 @@ class DiaryEntryItem extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ): new Card();
   }
 }

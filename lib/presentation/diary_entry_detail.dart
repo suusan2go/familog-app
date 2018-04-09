@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:familog/domain/diary_entry.dart';
+import 'package:familog/domain/diary_entry_author.dart';
 import 'package:familog/domain/diary_entry_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -71,10 +73,10 @@ class DotsIndicator extends AnimatedWidget {
 }
 
 class DiaryEntryDetail extends StatefulWidget {
-  DiaryEntryDetail(String title, int id): title = title, id = id;
+  DiaryEntryDetail(String diaryId, String diaryEntryId): diaryId = diaryId, diaryEntryId = diaryEntryId;
 
-  final String title;
-  final int id;
+  final String diaryId;
+  final String diaryEntryId;
 
   @override
   State<StatefulWidget> createState() {
@@ -94,9 +96,26 @@ class _DiaryEntryState extends State<DiaryEntryDetail> {
   @override
   void initState() {
     super.initState();
-    var entry = new DiaryEntryRepository().findByID(this.widget.id);
-    setState(() {
-      this._entry = entry;
+    Firestore.instance.collection('diaries/${widget.diaryId}/diary_entries').document(widget.diaryEntryId).get().then((document){
+      Firestore.instance.document("users/${document.data["authorId"]}").get().then((userDocument){
+        var entry = new DiaryEntry(
+            document.documentID,
+            document.data["emoji"],
+            document.data["body"],
+            document.data["wroteAt"],
+            (document.data["images"] as List<dynamic>).map((value){
+              return value as String;
+            }).toList(),
+            new DiaryEntryAuthor(
+              userDocument.documentID,
+              userDocument.data["name"],
+              userDocument.data["photoUrl"],
+            )
+        );
+        setState(() {
+          this._entry = entry;
+        });
+      });
     });
     pageController = new PageController();
   }
@@ -115,7 +134,7 @@ class _DiaryEntryState extends State<DiaryEntryDetail> {
   }
 
   String titleForAppBar(){
-    return _entry.title();
+    return _entry != null ? _entry.title() : "";
   }
 
   @override
@@ -126,7 +145,7 @@ class _DiaryEntryState extends State<DiaryEntryDetail> {
           // the App.build method, and use it to set our appbar title.
           title: new Text(titleForAppBar()),
         ),
-        body: new ListView(
+        body: _entry != null ? new ListView(
             children: <Widget>[
               new Container(
                   height: 200.0,
@@ -182,7 +201,7 @@ class _DiaryEntryState extends State<DiaryEntryDetail> {
                 padding: const EdgeInsets.only(left: 10.0, right: 10.0),
               )
             ],
-        ),
+        ) : new ListView(),
     );
   }
 }
