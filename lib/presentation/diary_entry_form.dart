@@ -32,6 +32,7 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
   File _imageFile1;
   File _imageFile2;
   File _imageFile3;
+  bool _isSubmitting = false;
 
   void _onChangeBody(String body) {
     setState(() {
@@ -106,6 +107,10 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
   }
 
   void _handlePublish(BuildContext context) async {
+    Navigator.of(context).pop();
+    setState(() {
+      this._isSubmitting = true;
+    });
     var currentUser = await auth.currentUser();
     List<String> imageUrls = [];
     imageUrls.add(await _uploadFile(_imageFile1));
@@ -119,7 +124,6 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
       'images': imageUrls.where((url) { return url != null; } ).toList(),
       'wroteAt': DateTime.now(),
     });
-    Navigator.of(context).pop();
   }
 
   @override
@@ -250,8 +254,14 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
 //            child: new RaisedButton(onPressed: (){}, child: new Text("下書き")),
 //          ),
           new Container(
-            padding: const EdgeInsets.only(left: 20.0, top: 0.0, right: 20.0, bottom: 20.0),
-            child: new RaisedButton(onPressed: () {_handlePublish(context);}, child: new Text("公開"), color: Theme.of(context).accentColor,textColor: Colors.white,),
+   //         padding: const EdgeInsets.only(left: 20.0, top: 0.0, right: 20.0, bottom: 20.0),
+            padding: const EdgeInsets.all(20.0),
+            child: new RaisedButton(
+                onPressed: () {_handlePublish(context);},
+                child: new Text("公開"),
+                color: Theme.of(context).accentColor,
+                textColor: Colors.white
+            ),
           ),
         ],
       ),
