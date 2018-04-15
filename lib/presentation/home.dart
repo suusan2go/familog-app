@@ -242,7 +242,7 @@ class DiaryEntryItem extends StatelessWidget {
       child: new InkWell(
         onTap: () {
           Navigator.of(context).push(new MaterialPageRoute(
-            builder: (context) => new DiaryEntryDetail(diary.id, entry.id),
+            builder: (context) => new DiaryEntryDetail(diary.id, entry),
           ));
         },
         child: new Row(

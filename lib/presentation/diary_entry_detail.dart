@@ -1,7 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:familog/domain/diary_entry.dart';
-import 'package:familog/domain/diary_entry_author.dart';
-import 'package:familog/domain/diary_entry_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'dart:math';
@@ -73,10 +70,10 @@ class DotsIndicator extends AnimatedWidget {
 }
 
 class DiaryEntryDetail extends StatefulWidget {
-  DiaryEntryDetail(String diaryId, String diaryEntryId): diaryId = diaryId, diaryEntryId = diaryEntryId;
+  DiaryEntryDetail(String diaryId, DiaryEntry diaryEntry): diaryId = diaryId, diaryEntry = diaryEntry;
 
   final String diaryId;
-  final String diaryEntryId;
+  final DiaryEntry diaryEntry;
 
   @override
   State<StatefulWidget> createState() {
@@ -88,7 +85,6 @@ class _DiaryEntryState extends State<DiaryEntryDetail> {
 
   PageController pageController;
   int page = 0;
-  DiaryEntry _entry;
 
   static const _kDuration = const Duration(milliseconds: 300);
   static const _kCurve = Curves.ease;
@@ -96,27 +92,6 @@ class _DiaryEntryState extends State<DiaryEntryDetail> {
   @override
   void initState() {
     super.initState();
-    Firestore.instance.collection('diaries/${widget.diaryId}/diary_entries').document(widget.diaryEntryId).get().then((document){
-      Firestore.instance.document("users/${document.data["authorId"]}").get().then((userDocument){
-        var entry = new DiaryEntry(
-            document.documentID,
-            document.data["emoji"],
-            document.data["body"],
-            document.data["wroteAt"],
-            (document.data["images"] as List<dynamic>).map((value){
-              return value as String;
-            }).toList(),
-            new DiaryEntryAuthor(
-              userDocument.documentID,
-              userDocument.data["name"],
-              userDocument.data["photoUrl"],
-            )
-        );
-        setState(() {
-          this._entry = entry;
-        });
-      });
-    });
     pageController = new PageController();
   }
 
@@ -134,7 +109,7 @@ class _DiaryEntryState extends State<DiaryEntryDetail> {
   }
 
   String titleForAppBar(){
-    return _entry != null ? _entry.title() : "";
+    return widget.diaryEntry.title();
   }
 
   @override
@@ -145,7 +120,7 @@ class _DiaryEntryState extends State<DiaryEntryDetail> {
           // the App.build method, and use it to set our appbar title.
           title: new Text(titleForAppBar()),
         ),
-        body: _entry != null ? new ListView(
+        body: widget.diaryEntry != null ? new ListView(
             children: <Widget>[
               new Container(
                   height: 200.0,
@@ -153,7 +128,7 @@ class _DiaryEntryState extends State<DiaryEntryDetail> {
                   child:  new Stack(
                     children: <Widget>[
                       new PageView(
-                          children: _entry.images.map((image) {
+                          children: widget.diaryEntry.images.map((image) {
                             return new Image.network(image, height: 100.0, width: 100.0, fit: BoxFit.contain);
                           }).toList(),
                           controller: pageController,
@@ -184,14 +159,14 @@ class _DiaryEntryState extends State<DiaryEntryDetail> {
                   )
               ),
               new Container(
-                child: new Text(_entry.title(), softWrap: true, style: new TextStyle(
+                child: new Text(widget.diaryEntry.title(), softWrap: true, style: new TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 17.0
                 ),),
                 padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0, bottom: 10.0),
               ),
               new Container(
-                child: new Text(_entry.body,
+                child: new Text(widget.diaryEntry.body,
                   softWrap: true,
                   style: new TextStyle(
                       fontSize: 16.0,
