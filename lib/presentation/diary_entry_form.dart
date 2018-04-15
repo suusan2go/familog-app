@@ -34,6 +34,10 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
   File _imageFile3;
   bool _isSubmitting = false;
 
+  String _bodyError;
+  String _emojiError;
+  String _imagerror;
+
   void _onChangeBody(String body) {
     setState(() {
       this._body = body;
@@ -106,24 +110,39 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
     return (await uploadTask.future).downloadUrl.toString();
   }
 
+  bool _validation() {
+    if(_body == null || _body.isEmpty) {
+      setState(() {
+        _bodyError = "本文を入力してください";
+      });
+      return false;
+    }
+    return true;
+  }
+
   void _handlePublish(BuildContext context) async {
-    Navigator.of(context).pop();
-    setState(() {
-      this._isSubmitting = true;
-    });
-    var currentUser = await auth.currentUser();
-    List<String> imageUrls = [];
-    imageUrls.add(await _uploadFile(_imageFile1));
-    imageUrls.add(await _uploadFile(_imageFile2));
-    imageUrls.add(await _uploadFile(_imageFile3));
-    Firestore.instance.collection('diaries/${widget.currentDiary.id}/diary_entries').document()
-        .setData({
-      'body': _body,
-      'emoji': _emoji,
-      'authorId': currentUser.uid,
-      'images': imageUrls.where((url) { return url != null; } ).toList(),
-      'wroteAt': DateTime.now(),
-    });
+    if(_validation()) {
+      Navigator.of(context).pop();
+      setState(() {
+        this._isSubmitting = true;
+      });
+      var currentUser = await auth.currentUser();
+      List<String> imageUrls = [];
+      imageUrls.add(await _uploadFile(_imageFile1));
+      imageUrls.add(await _uploadFile(_imageFile2));
+      imageUrls.add(await _uploadFile(_imageFile3));
+      Firestore.instance.collection(
+          'diaries/${widget.currentDiary.id}/diary_entries').document()
+          .setData({
+        'body': _body,
+        'emoji': _emoji,
+        'authorId': currentUser.uid,
+        'images': imageUrls.where((url) {
+          return url != null;
+        }).toList(),
+        'wroteAt': DateTime.now(),
+      });
+    }
   }
 
   @override
@@ -139,10 +158,11 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
             title: new Text("本文"),
           ),
           new TextField(
-            decoration: const InputDecoration(
+            decoration: new InputDecoration(
                 hintText: '本文を入力してください',
                 filled: true,
-                fillColor: Colors.white
+                fillColor: Colors.white,
+                errorText: _bodyError,
             ),
             maxLines: 10,
             onChanged: _onChangeBody,

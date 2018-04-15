@@ -41,7 +41,8 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    repository =new DiaryEntryRepository();
+    _ensureLoggedIn();
+    repository = new DiaryEntryRepository();
     _controller.addListener(this._loadMoreEntries);
     var entries = repository.findAll();
     setState(() {
