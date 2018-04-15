@@ -22,7 +22,7 @@ class DiaryEntry {
 
   String title() {
     var formatter = new DateFormat('yyyy-MM-dd');
-    return "${formatter.format(wroteAt)} すーさんの日記";
+    return "${formatter.format(wroteAt)} ${author.name}の日記";
   }
 
   String primaryImageUrl() {
