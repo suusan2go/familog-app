@@ -137,7 +137,7 @@ class _HomeState extends State<Home> {
       _user == null ?  _buildNotLoggedIn(context): new RefreshIndicator(
           onRefresh: _onRefresh,
           child: new Scrollbar(
-              child: new DiaryEntryList(currentDiary: _currentDiary)
+              child: new DiaryEntryStream(currentDiary: _currentDiary)
           )
       ),
       floatingActionButton: _user == null ? null : new FloatingActionButton(
@@ -154,54 +154,49 @@ class _HomeState extends State<Home> {
   }
 }
 
-class DiaryEntryList extends StatelessWidget {
-  const DiaryEntryList({ Key key, this.currentDiary }): super(key: key);
-
+class DiaryEntryStream extends StatelessWidget {
+  const DiaryEntryStream({ Key key, this.currentDiary }): super(key: key);
   final Diary currentDiary;
 
   @override
   Widget build(BuildContext context){
     return new StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection('diaries/${currentDiary.id}/diary_entries').orderBy("wroteAt", descending: true).snapshots,
+      stream: Firestore.instance.collection('diaries/${this.currentDiary.id}/diary_entries').orderBy("wroteAt", descending: true).snapshots,
       builder: (context, snapshot) {
         if (!snapshot.hasData) return new Text('Loading...');
-        return new ListView(
-          children: snapshot.data.documents.map((document) {
-            return new DiaryEntryItem(document, currentDiary);
-          }).toList(),
-        );
+        return new DiaryEntryList(documents: snapshot.data.documents, diary: this.currentDiary);
       },
 
     );
   }
 }
 
-class DiaryEntryItem extends StatefulWidget {
-  DiaryEntryItem(DocumentSnapshot document, Diary diary): document = document, diary = diary;
+class DiaryEntryList extends StatefulWidget {
+  const DiaryEntryList({ Key key, this.documents, this.diary }): super(key: key);
 
-  final DocumentSnapshot document;
+  final List<DocumentSnapshot> documents;
   final Diary diary;
 
   @override
-  DiaryEntryItemState createState() {
-    return new DiaryEntryItemState();
+  DiaryEntryListState createState() {
+    return new DiaryEntryListState();
   }
 }
 
-class DiaryEntryItemState extends State<DiaryEntryItem> {
-  DiaryEntry _entry;
-
-  void updateState(DiaryEntry entry) {
-    setState(() {
-      this._entry = entry;
-    });
-  }
+class DiaryEntryListState extends State<DiaryEntryList> {
+  List<DiaryEntry> diaryEntries = [];
 
   @override
-  void initState() {
+  initState() {
     super.initState();
-    var document = widget.document;
-    Firestore.instance.document("users/${document.data["authorId"]}").get().then((userDocument){
+    setDiaryEntries();
+  }
+
+  setDiaryEntries() async {
+    if(widget.documents.length == this.diaryEntries.length) return;
+    List<DiaryEntry> _entries = [];
+    for(var document in widget.documents) {
+      var userDocument = await Firestore.instance.document("users/${document.data["authorId"]}").get();
       var entry = new DiaryEntry(
           document.documentID,
           document.data["emoji"],
@@ -216,36 +211,56 @@ class DiaryEntryItemState extends State<DiaryEntryItem> {
             userDocument.data["photoUrl"],
           )
       );
-      updateState(entry);
+      _entries.add(entry);
+    }
+    setState(() {
+      this.diaryEntries = _entries;
     });
   }
 
   @override
+  Widget build(BuildContext context){
+    setDiaryEntries();
+    return new ListView(
+      children: diaryEntries.map((diaryEntry) {
+        return new DiaryEntryItem(entry: diaryEntry, diary: widget.diary);
+      }).toList(),
+    );
+  }
+}
+
+class DiaryEntryItem extends StatelessWidget {
+  const DiaryEntryItem({ Key key, this.diary, this.entry }): super(key: key);
+
+  final Diary diary;
+  final DiaryEntry entry;
+
+  @override
   Widget build(BuildContext context) {
 
-    return _entry != null ? new Card(
+    return entry != null ? new Card(
       child: new InkWell(
         onTap: () {
           Navigator.of(context).push(new MaterialPageRoute(
-            builder: (context) => new DiaryEntryDetail(widget.diary.id, _entry.id),
+            builder: (context) => new DiaryEntryDetail(diary.id, entry.id),
           ));
         },
         child: new Row(
           children: <Widget>[
-            new Image.network(_entry.primaryImageUrl(), height: 100.0, width: 100.0, fit: BoxFit.cover),
+            new Image.network(entry.primaryImageUrl(), height: 100.0, width: 100.0, fit: BoxFit.cover),
             new Expanded(
                 child: new Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     new Container(
-                      child: new Text(_entry.title(), softWrap: true, style: new TextStyle(
+                      child: new Text(entry.title(), softWrap: true, style: new TextStyle(
                           fontWeight: FontWeight.w300,
                           fontSize: 16.0
                       ),),
                       padding: const EdgeInsets.only(left: 10.0, right: 10.0),
                     ),
                     new Container(
-                      child: new Text(_entry.body,
+                      child: new Text(entry.body,
                         softWrap: true,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 3,
